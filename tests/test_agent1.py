@@ -11,6 +11,7 @@ import os
 import unittest
 import pandas as pd
 from datetime import date, timedelta
+from unittest.mock import patch, MagicMock
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
@@ -336,41 +337,54 @@ class TestAgent1FallbackNarrative(unittest.TestCase):
         self.assertIn("HIGH", narrative)
 
 
+def _mock_llm_client():
+    """Return a MagicMock LLM client that returns empty text (triggers template fallback)."""
+    mock = MagicMock()
+    mock.generate_text.return_value = ""
+    return mock
+
+
 class TestAgent1FullAnalysis(unittest.TestCase):
-    """Test the full analyse() method end-to-end (no LLM)."""
+    """Test the full analyse() method end-to-end (no LLM — mocked)."""
 
     def setUp(self):
         self.agent = RiskAssessmentAgent()
 
-    def test_full_analysis_returns_result(self):
+    @patch("agents.agent1_risk.RiskAssessmentAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_full_analysis_returns_result(self, _mock):
         df = make_incidents(n=5, species="Elephant")
         village = make_village_info()
         result = self.agent.analyse(df, village)
         self.assertIsInstance(result, RiskAssessmentResult)
 
-    def test_full_analysis_success_flag(self):
+    @patch("agents.agent1_risk.RiskAssessmentAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_full_analysis_success_flag(self, _mock):
         df = make_incidents(n=5)
         result = self.agent.analyse(df, make_village_info())
         self.assertTrue(result.success)
 
-    def test_full_analysis_risk_level_valid(self):
+    @patch("agents.agent1_risk.RiskAssessmentAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_full_analysis_risk_level_valid(self, _mock):
         df = make_incidents(n=5)
         result = self.agent.analyse(df, make_village_info())
         self.assertIn(result.risk_level, ["LOW", "MEDIUM", "HIGH"])
 
-    def test_full_analysis_score_in_range(self):
+    @patch("agents.agent1_risk.RiskAssessmentAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_full_analysis_score_in_range(self, _mock):
         df = make_incidents(n=5)
         result = self.agent.analyse(df, make_village_info())
         self.assertGreaterEqual(result.risk_score, 0)
         self.assertLessEqual(result.risk_score, 100)
 
-    def test_full_analysis_empty_dataframe(self):
+    @patch("agents.agent1_risk.RiskAssessmentAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_full_analysis_empty_dataframe(self, _mock):
         """Empty DataFrame should not crash — should return LOW risk."""
         result = self.agent.analyse(pd.DataFrame(), make_village_info())
         self.assertIsInstance(result, RiskAssessmentResult)
         self.assertEqual(result.incident_count, 0)
 
-    def test_full_analysis_to_dict_serializable(self):
+    @patch("agents.agent1_risk.RiskAssessmentAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_full_analysis_to_dict_serializable(self, _mock):
         """to_dict() output must be JSON-serializable."""
         import json
         df = make_incidents(n=5)
@@ -378,7 +392,8 @@ class TestAgent1FullAnalysis(unittest.TestCase):
         # This should not raise
         json.dumps(result.to_dict())
 
-    def test_high_risk_village_scores_correctly(self):
+    @patch("agents.agent1_risk.RiskAssessmentAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_high_risk_village_scores_correctly(self, _mock):
         """A village with many recent incidents + Tiger + close to forest should be HIGH."""
         df = make_incidents(n=20, species="Tiger", days_ago_start=5)
         village = make_village_info(proximity_km=0.8)
@@ -386,25 +401,29 @@ class TestAgent1FullAnalysis(unittest.TestCase):
         self.assertEqual(result.risk_level, "HIGH")
         self.assertGreaterEqual(result.risk_score, 66)
 
-    def test_progress_callback_called(self):
+    @patch("agents.agent1_risk.RiskAssessmentAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_progress_callback_called(self, _mock):
         """Progress callback should be called at least once."""
         messages = []
         df = make_incidents(n=3)
         self.agent.analyse(df, make_village_info(), on_progress=messages.append)
         self.assertGreater(len(messages), 0)
 
-    def test_primary_species_in_result(self):
+    @patch("agents.agent1_risk.RiskAssessmentAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_primary_species_in_result(self, _mock):
         """Species from incidents should appear in result."""
         df = make_incidents(n=5, species="Leopard")
         result = self.agent.analyse(df, make_village_info())
         self.assertIn("Leopard", result.primary_species)
 
-    def test_monthly_trend_is_dict(self):
+    @patch("agents.agent1_risk.RiskAssessmentAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_monthly_trend_is_dict(self, _mock):
         df = make_incidents(n=5)
         result = self.agent.analyse(df, make_village_info())
         self.assertIsInstance(result.monthly_trend, dict)
 
-    def test_scoring_breakdown_has_all_components(self):
+    @patch("agents.agent1_risk.RiskAssessmentAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_scoring_breakdown_has_all_components(self, _mock):
         df = make_incidents(n=5)
         result = self.agent.analyse(df, make_village_info())
         required = ["incident_frequency", "recent_activity_bonus", "species_danger", "forest_proximity"]

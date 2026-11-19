@@ -45,19 +45,20 @@ class LLMConfig1:
 
 
 # ----------------------------------------------------------------
-# LLM Configuration — Agent 2 (Safety Advisor — Replicate)
+# LLM Configuration — Agent 2 (Safety Advisor — IBM Watsonx.ai)
 # ----------------------------------------------------------------
 @dataclass
 class LLMConfig2:
     """
-    Configuration for Agent 2 — uses Replicate API with IBM Granite.
-    Model: ibm-granite/granite-4.2-8b on Replicate.
-    No project_id or Watsonx URL needed — Replicate uses only an API token.
+    Configuration for Agent 2 — uses IBM Watsonx.ai (same platform as Agent 1).
+    Both agents use IBM Granite via Watsonx.ai with independent configurations.
+    Agent 2 uses a higher temperature for natural advisory language.
     """
-    api_key: str                 # Replicate API token (REPLICATE_API_KEY)
-    model_id: str                # e.g. "ibm-granite/granite-4.2-8b"
-    # Replicate uses a different parameter name scheme
-    temperature: float = 0.7
+    api_key: str                 # IBM Cloud API key (WATSONX_API_KEY_2)
+    project_id: str              # IBM Watsonx.ai project ID (WATSONX_PROJECT_ID_2)
+    model_id: str                # e.g. "ibm/granite-4-h-small"
+    url: str                     # Watsonx.ai endpoint URL
+    temperature: float = 0.7     # Higher temperature for natural language
     max_new_tokens: int = 1500
     top_p: float = 0.95
 
@@ -94,16 +95,18 @@ def get_llm_config_1() -> LLMConfig1:
     return LLMConfig1(
         api_key=_get("WATSONX_API_KEY_1"),
         project_id=_get("WATSONX_PROJECT_ID_1"),
-        model_id=_get("WATSONX_MODEL_ID_1", "ibm/granite-13b-instruct-v2"),
+        model_id=_get("WATSONX_MODEL_ID_1", "ibm/granite-4-h-small"),
         url=_get("WATSONX_URL_1", "https://us-south.ml.cloud.ibm.com"),
     )
 
 
 def get_llm_config_2() -> LLMConfig2:
-    """Return LLM configuration for Agent 2 (Replicate)."""
+    """Return LLM configuration for Agent 2 (IBM Watsonx.ai)."""
     return LLMConfig2(
-        api_key=_get("REPLICATE_API_KEY"),
-        model_id=_get("REPLICATE_MODEL_ID", "ibm-granite/granite-4.2-8b"),
+        api_key=_get("WATSONX_API_KEY_2", _get("WATSONX_API_KEY_1")),
+        project_id=_get("WATSONX_PROJECT_ID_2", _get("WATSONX_PROJECT_ID_1")),
+        model_id=_get("WATSONX_MODEL_ID_2", "ibm/granite-4-h-small"),
+        url=_get("WATSONX_URL_2", _get("WATSONX_URL_1", "https://us-south.ml.cloud.ibm.com")),
     )
 
 
@@ -142,8 +145,8 @@ def validate_config() -> dict:
         errors.append("WATSONX_API_KEY_1 is not configured (Agent 1 — IBM Watsonx).")
     if not cfg1.project_id or cfg1.project_id.startswith("REPLACE"):
         errors.append("WATSONX_PROJECT_ID_1 is not configured (Agent 1 — IBM Watsonx).")
-    if not cfg2.api_key or cfg2.api_key.startswith("REPLACE"):
-        errors.append("REPLICATE_API_KEY is not configured (Agent 2 — Replicate).")
+    # Agent 2 falls back to Agent 1 credentials if WATSONX_API_KEY_2 is not set separately.
+    # No error raised if Agent 2 uses shared credentials.
     # DB is optional — app runs in CSV demo mode without it, so no error raised.
 
     return {"valid": len(errors) == 0, "errors": errors}

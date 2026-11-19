@@ -247,7 +247,11 @@ class SafetyAdvisorAgent:
     def __init__(self):
         self.config = get_llm_config_2()
         self._llm_client = None
-        logger.info("Agent 2 (Safety Advisor) initialized. Model: %s", self.config.model_id)
+        logger.info(
+            "Agent 2 (Safety Advisor) initialized. Model: %s | Project: %s",
+            self.config.model_id,
+            self.config.project_id[:8] + "..." if self.config.project_id else "not set",
+        )
 
     # ----------------------------------------------------------------
     # Public API
@@ -353,16 +357,17 @@ class SafetyAdvisorAgent:
             return self._error_result(risk_result, str(exc))
 
     def test_llm_connection(self) -> dict:
-        """Test Replicate + IBM Granite connectivity for Agent 2."""
+        """Test IBM Watsonx.ai connectivity for Agent 2."""
         try:
-            self._get_llm_client()  # Ensures API token is set
-            response = self._call_replicate(
-                "Translate 'Hello, stay safe' to Kannada in one sentence:"
+            llm = self._get_llm_client()
+            response = llm.generate_text(
+                prompt="Translate 'Stay safe' to Kannada in one sentence:"
             )
             return {
                 "connected": True,
                 "model": self.config.model_id,
-                "platform": "Replicate",
+                "platform": "IBM Watsonx.ai",
+                "url": self.config.url,
                 "test_response": response.strip() if response else "(empty)",
                 "error": None,
             }
@@ -370,78 +375,63 @@ class SafetyAdvisorAgent:
             return {
                 "connected": False,
                 "model": self.config.model_id,
-                "platform": "Replicate",
+                "platform": "IBM Watsonx.ai",
+                "url": getattr(self.config, "url", ""),
                 "test_response": None,
                 "error": str(exc),
             }
 
     # ----------------------------------------------------------------
-    # LLM Client — lazy initialization
+    # LLM Client — lazy initialization (IBM Watsonx.ai)
     # ----------------------------------------------------------------
 
     def _get_llm_client(self):
         """
-        Initialize Replicate client for Agent 2 on first use.
+        Initialize IBM Watsonx.ai ModelInference client for Agent 2 on first use.
 
-        Agent 2 uses Replicate API to access IBM Granite ibm-granite/granite-4.2-8b.
-        Authentication: REPLICATE_API_KEY environment variable (set automatically
-        by the replicate library when os.environ["REPLICATE_API_TOKEN"] is set).
+        Agent 2 uses IBM Granite via Watsonx.ai — same platform as Agent 1.
+        Uses WATSONX_API_KEY_2 / WATSONX_PROJECT_ID_2 (or falls back to Agent 1
+        credentials if separate Agent 2 keys are not configured).
+        Temperature 0.7 — higher than Agent 1 for natural advisory language.
         """
         if self._llm_client is not None:
             return self._llm_client
 
-        import os
-        import replicate
+        from ibm_watsonx_ai import Credentials
+        from ibm_watsonx_ai.foundation_models import ModelInference
+        from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
 
         if not self.config.api_key or self.config.api_key.startswith("REPLACE"):
             raise ValueError(
-                "REPLICATE_API_KEY is not configured. "
+                "WATSONX_API_KEY_2 (or WATSONX_API_KEY_1 as fallback) is not configured. "
+                "Set it in your .env file or Streamlit Secrets."
+            )
+        if not self.config.project_id or self.config.project_id.startswith("REPLACE"):
+            raise ValueError(
+                "WATSONX_PROJECT_ID_2 (or WATSONX_PROJECT_ID_1 as fallback) is not configured. "
                 "Set it in your .env file or Streamlit Secrets."
             )
 
-        # The replicate library reads REPLICATE_API_TOKEN from the environment.
-        # We set it here from our config so it works regardless of .env key name.
-        os.environ["REPLICATE_API_TOKEN"] = self.config.api_key
-
-        # Store a simple callable wrapper — Replicate is stateless per call,
-        # so we store the config reference as the "client".
-        self._llm_client = replicate
-        logger.info("Agent 2 Replicate client ready. Model: %s", self.config.model_id)
-        return self._llm_client
-
-    # ----------------------------------------------------------------
-    # Replicate API Call Helper
-    # ----------------------------------------------------------------
-
-    def _call_replicate(self, prompt: str) -> str:
-        """
-        Call IBM Granite via Replicate API and return the response text.
-
-        Replicate streams output tokens — we join them into a single string.
-        The model ibm-granite/granite-4.2-8b follows instruction format.
-
-        Args:
-            prompt: The full prompt string to send.
-
-        Returns:
-            Generated text as a string, or empty string on failure.
-        """
-        import replicate as _replicate
-
-        output = _replicate.run(
-            self.config.model_id,
-            input={
-                "prompt": prompt,
-                "max_new_tokens": self.config.max_new_tokens,
-                "temperature": self.config.temperature,
-                "top_p": self.config.top_p,
+        credentials = Credentials(
+            url=self.config.url,
+            api_key=self.config.api_key,
+        )
+        self._llm_client = ModelInference(
+            model_id=self.config.model_id,
+            credentials=credentials,
+            project_id=self.config.project_id,
+            params={
+                GenParams.TEMPERATURE:    self.config.temperature,
+                GenParams.MAX_NEW_TOKENS: self.config.max_new_tokens,
+                GenParams.TOP_P:          self.config.top_p,
             },
         )
-
-        # Replicate returns a generator of string chunks — join them
-        if hasattr(output, "__iter__") and not isinstance(output, str):
-            return "".join(str(chunk) for chunk in output)
-        return str(output) if output else ""
+        logger.info(
+            "Agent 2 Watsonx.ai client ready. Model: %s | Project: %s",
+            self.config.model_id,
+            self.config.project_id[:8] + "...",
+        )
+        return self._llm_client
 
 
     # ----------------------------------------------------------------
@@ -463,7 +453,7 @@ class SafetyAdvisorAgent:
         Returns: (advisory_text, llm_was_used)
         """
         try:
-            self._get_llm_client()  # Ensures REPLICATE_API_TOKEN is set
+            llm = self._get_llm_client()
 
             species_str = (
                 ", ".join(risk_result.primary_species)
@@ -499,7 +489,7 @@ class SafetyAdvisorAgent:
                 f"Write the safety advisory now:"
             )
 
-            response = self._call_replicate(prompt)
+            response = llm.generate_text(prompt=prompt)
             if response and response.strip():
                 text = response.strip()
                 return text + ADVISORY_DISCLAIMER_EN, True
@@ -528,7 +518,7 @@ class SafetyAdvisorAgent:
         Returns: (kannada_advisory_text, llm_was_used)
         """
         try:
-            self._get_llm_client()  # Ensures REPLICATE_API_TOKEN is set
+            llm = self._get_llm_client()
 
             species_str = (
                 ", ".join(risk_result.primary_species)
@@ -563,7 +553,7 @@ class SafetyAdvisorAgent:
                 f"ಕನ್ನಡ ಸಲಹೆ:"
             )
 
-            response = self._call_replicate(prompt)
+            response = llm.generate_text(prompt=prompt)
             if response and response.strip():
                 text = response.strip()
                 # Fallback to base if response is in English

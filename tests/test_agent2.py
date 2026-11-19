@@ -8,6 +8,7 @@
 import sys
 import os
 import unittest
+from unittest.mock import patch, MagicMock
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
@@ -207,29 +208,40 @@ class TestAgent2TemplateAdvisories(unittest.TestCase):
         self.assertGreater(len(ADVISORY_DISCLAIMER_KN), 20)
 
 
+def _mock_llm_client():
+    """Return a MagicMock LLM client that returns empty text (triggers template fallback)."""
+    mock = MagicMock()
+    mock.generate_text.return_value = ""
+    return mock
+
+
 class TestAgent2AdvisoryGeneration(unittest.TestCase):
-    """Test generate_advisory() method end-to-end (no LLM)."""
+    """Test generate_advisory() method end-to-end (no LLM — mocked)."""
 
     def setUp(self):
         self.agent = SafetyAdvisorAgent()
 
-    def test_returns_safety_advisory_result(self):
+    @patch("agents.agent2_safety.SafetyAdvisorAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_returns_safety_advisory_result(self, _mock):
         risk = make_risk_result()
         result = self.agent.generate_advisory(risk)
         self.assertIsInstance(result, SafetyAdvisoryResult)
 
-    def test_village_name_propagated(self):
+    @patch("agents.agent2_safety.SafetyAdvisorAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_village_name_propagated(self, _mock):
         risk = make_risk_result(village="KodaguVillage")
         result = self.agent.generate_advisory(risk)
         self.assertEqual(result.village_name, "KodaguVillage")
 
-    def test_risk_level_propagated(self):
+    @patch("agents.agent2_safety.SafetyAdvisorAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_risk_level_propagated(self, _mock):
         for level in ["LOW", "MEDIUM", "HIGH"]:
             risk = make_risk_result(risk_level=level)
             result = self.agent.generate_advisory(risk)
             self.assertEqual(result.risk_level, level)
 
-    def test_advisory_priority_matches_risk_level(self):
+    @patch("agents.agent2_safety.SafetyAdvisorAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_advisory_priority_matches_risk_level(self, _mock):
         """HIGH → URGENT, MEDIUM → CAUTION, LOW → AWARENESS."""
         expected = {"HIGH": "URGENT", "MEDIUM": "CAUTION", "LOW": "AWARENESS"}
         for risk_level, expected_priority in expected.items():
@@ -238,40 +250,48 @@ class TestAgent2AdvisoryGeneration(unittest.TestCase):
             self.assertEqual(result.advisory_priority, expected_priority,
                              f"{risk_level} should give {expected_priority}")
 
-    def test_english_advisory_is_string(self):
+    @patch("agents.agent2_safety.SafetyAdvisorAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_english_advisory_is_string(self, _mock):
         result = self.agent.generate_advisory(make_risk_result())
         self.assertIsInstance(result.advisory_english, str)
 
-    def test_kannada_advisory_is_string(self):
+    @patch("agents.agent2_safety.SafetyAdvisorAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_kannada_advisory_is_string(self, _mock):
         result = self.agent.generate_advisory(make_risk_result())
         self.assertIsInstance(result.advisory_kannada, str)
 
-    def test_english_advisory_non_empty(self):
+    @patch("agents.agent2_safety.SafetyAdvisorAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_english_advisory_non_empty(self, _mock):
         result = self.agent.generate_advisory(make_risk_result())
         self.assertGreater(len(result.advisory_english), 50)
 
-    def test_kannada_advisory_non_empty(self):
+    @patch("agents.agent2_safety.SafetyAdvisorAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_kannada_advisory_non_empty(self, _mock):
         result = self.agent.generate_advisory(make_risk_result())
         self.assertGreater(len(result.advisory_kannada), 20)
 
-    def test_precautions_is_list(self):
+    @patch("agents.agent2_safety.SafetyAdvisorAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_precautions_is_list(self, _mock):
         result = self.agent.generate_advisory(make_risk_result())
         self.assertIsInstance(result.precautions, list)
         self.assertGreater(len(result.precautions), 0)
 
-    def test_target_audiences_non_empty(self):
+    @patch("agents.agent2_safety.SafetyAdvisorAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_target_audiences_non_empty(self, _mock):
         result = self.agent.generate_advisory(make_risk_result())
         self.assertIsInstance(result.target_audiences, list)
         self.assertGreater(len(result.target_audiences), 0)
 
-    def test_unknown_risk_level_defaults_to_medium(self):
+    @patch("agents.agent2_safety.SafetyAdvisorAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_unknown_risk_level_defaults_to_medium(self, _mock):
         """An unknown risk level should not crash — should default to MEDIUM."""
         risk = make_risk_result(risk_level="CATASTROPHIC")  # Not a valid level
         result = self.agent.generate_advisory(risk)
         self.assertEqual(result.risk_level, "MEDIUM")
         self.assertEqual(result.advisory_priority, "CAUTION")
 
-    def test_advisory_body_does_not_contain_harmful_phrases(self):
+    @patch("agents.agent2_safety.SafetyAdvisorAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_advisory_body_does_not_contain_harmful_phrases(self, _mock):
         """
         The advisory body (excluding the fixed disclaimer) must not contain
         harmful phrases like 'chase', 'trap', 'GPS', 'live location'.
@@ -296,21 +316,24 @@ class TestAgent2AdvisoryGeneration(unittest.TestCase):
                 f"Harmful phrase '{phrase}' found in English advisory body"
             )
 
-    def test_to_dict_is_json_serializable(self):
+    @patch("agents.agent2_safety.SafetyAdvisorAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_to_dict_is_json_serializable(self, _mock):
         """to_dict() must be JSON-serializable."""
         import json
         risk = make_risk_result()
         result = self.agent.generate_advisory(risk)
         json.dumps(result.to_dict())  # Should not raise
 
-    def test_progress_callback_called(self):
+    @patch("agents.agent2_safety.SafetyAdvisorAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_progress_callback_called(self, _mock):
         """Progress callback should be called at least once."""
         messages = []
         risk = make_risk_result()
         self.agent.generate_advisory(risk, on_progress=messages.append)
         self.assertGreater(len(messages), 0)
 
-    def test_all_risk_levels_produce_valid_advisories(self):
+    @patch("agents.agent2_safety.SafetyAdvisorAgent._get_llm_client", return_value=_mock_llm_client())
+    def test_all_risk_levels_produce_valid_advisories(self, _mock):
         """All three risk levels must produce valid advisories."""
         for level in ["LOW", "MEDIUM", "HIGH"]:
             risk = make_risk_result(risk_level=level)

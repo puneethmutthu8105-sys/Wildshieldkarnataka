@@ -10,6 +10,7 @@ import sys
 import os
 import unittest
 import pandas as pd
+from unittest.mock import patch, MagicMock
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
@@ -77,6 +78,23 @@ class TestOrchestratorDataLoading(unittest.TestCase):
         self.assertEqual(stats["villages_affected"], df["village_name"].nunique())
 
 
+def _mock_llm_client():
+    """Return a MagicMock LLM client that returns empty text (triggers template fallback)."""
+    mock = MagicMock()
+    mock.generate_text.return_value = ""
+    return mock
+
+
+_PATCH_A1 = patch(
+    "agents.agent1_risk.RiskAssessmentAgent._get_llm_client",
+    return_value=_mock_llm_client(),
+)
+_PATCH_A2 = patch(
+    "agents.agent2_safety.SafetyAdvisorAgent._get_llm_client",
+    return_value=_mock_llm_client(),
+)
+
+
 class TestOrchestratorPipeline(unittest.TestCase):
 
     def setUp(self):
@@ -85,45 +103,65 @@ class TestOrchestratorPipeline(unittest.TestCase):
     def _run(self, village):
         return self.orch.run_full_analysis(village, use_db=False)
 
-    def test_returns_analysis_result(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_returns_analysis_result(self, _m2, _m1):
         result = self._run("Nagapura")
         self.assertIsInstance(result, AnalysisResult)
 
-    def test_success_flag_true_for_known_village(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_success_flag_true_for_known_village(self, _m2, _m1):
         result = self._run("Nagapura")
         self.assertTrue(result.success, f"Pipeline failed: {result.error_message}")
 
-    def test_risk_assessment_is_result_type(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_risk_assessment_is_result_type(self, _m2, _m1):
         result = self._run("Nagapura")
         self.assertIsInstance(result.risk_assessment, RiskAssessmentResult)
 
-    def test_safety_advisory_is_result_type(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_safety_advisory_is_result_type(self, _m2, _m1):
         result = self._run("Nagapura")
         self.assertIsInstance(result.safety_advisory, SafetyAdvisoryResult)
 
-    def test_village_name_preserved(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_village_name_preserved(self, _m2, _m1):
         result = self._run("Nagapura")
         self.assertEqual(result.village_name, "Nagapura")
 
-    def test_total_time_seconds_positive(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_total_time_seconds_positive(self, _m2, _m1):
         result = self._run("Nagapura")
         self.assertGreater(result.total_time_seconds, 0)
 
-    def test_risk_level_valid(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_risk_level_valid(self, _m2, _m1):
         result = self._run("Nagapura")
         self.assertIn(result.risk_assessment.risk_level, ["LOW", "MEDIUM", "HIGH", "UNKNOWN"])
 
-    def test_advisory_priority_valid(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_advisory_priority_valid(self, _m2, _m1):
         result = self._run("Nagapura")
         self.assertIn(result.safety_advisory.advisory_priority, ["URGENT", "CAUTION", "AWARENESS"])
 
-    def test_to_dict_json_serializable(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_to_dict_json_serializable(self, _m2, _m1):
         import json
         result = self._run("Nagapura")
         # Should not raise
         json.dumps(result.to_dict())
 
-    def test_all_11_villages_succeed(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_all_11_villages_succeed(self, _m2, _m1):
         """Every village in the synthetic dataset should produce a valid result."""
         df = self.orch.get_all_incidents()
         villages = df["village_name"].unique().tolist()
@@ -139,38 +177,52 @@ class TestOrchestratorPipeline(unittest.TestCase):
             self.assertIsInstance(result.safety_advisory.advisory_english, str)
             self.assertIsInstance(result.safety_advisory.advisory_kannada, str)
 
-    def test_nagapura_is_high_risk(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_nagapura_is_high_risk(self, _m2, _m1):
         """Nagapura has 8 incidents with Elephant+Leopard close to forest → HIGH."""
         result = self._run("Nagapura")
         self.assertEqual(result.risk_assessment.risk_level, "HIGH",
                          f"Expected HIGH, got {result.risk_assessment.risk_level} "
                          f"(score: {result.risk_assessment.risk_score})")
 
-    def test_progress_callback_invoked(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_progress_callback_invoked(self, _m2, _m1):
         """Progress callback should be called by orchestrator."""
         messages = []
         self.orch.run_full_analysis("Nagapura", use_db=False, on_progress=messages.append)
         self.assertGreater(len(messages), 0)
 
-    def test_unknown_village_handled_gracefully(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_unknown_village_handled_gracefully(self, _m2, _m1):
         """An unknown village name should not crash — uses all CSV data as fallback."""
         result = self._run("CompletelyNonExistentVillage12345")
         # May succeed or return a result — must not raise
         self.assertIsInstance(result, AnalysisResult)
 
-    def test_english_advisory_non_empty(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_english_advisory_non_empty(self, _m2, _m1):
         result = self._run("Nagapura")
         self.assertGreater(len(result.safety_advisory.advisory_english), 50)
 
-    def test_kannada_advisory_non_empty(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_kannada_advisory_non_empty(self, _m2, _m1):
         result = self._run("Nagapura")
         self.assertGreater(len(result.safety_advisory.advisory_kannada), 20)
 
-    def test_risk_factors_non_empty(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_risk_factors_non_empty(self, _m2, _m1):
         result = self._run("Nagapura")
         self.assertGreater(len(result.risk_assessment.risk_factors), 0)
 
-    def test_scoring_breakdown_has_total(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_scoring_breakdown_has_total(self, _m2, _m1):
         result = self._run("Nagapura")
         self.assertIn("total", result.risk_assessment.scoring_breakdown)
 
@@ -180,16 +232,22 @@ class TestOrchestratorBatchAnalysis(unittest.TestCase):
     def setUp(self):
         self.orch = WildShieldOrchestrator()
 
-    def test_batch_returns_list(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_batch_returns_list(self, _m2, _m1):
         results = self.orch.run_batch_analysis(["Nagapura", "Somvarpet"], use_db=False)
         self.assertIsInstance(results, list)
 
-    def test_batch_returns_correct_count(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_batch_returns_correct_count(self, _m2, _m1):
         villages = ["Nagapura", "Somvarpet", "Kabini Village"]
         results = self.orch.run_batch_analysis(villages, use_db=False)
         self.assertEqual(len(results), 3)
 
-    def test_batch_preserves_order(self):
+    @_PATCH_A1
+    @_PATCH_A2
+    def test_batch_preserves_order(self, _m2, _m1):
         villages = ["Nagapura", "Somvarpet"]
         results = self.orch.run_batch_analysis(villages, use_db=False)
         self.assertEqual(results[0].village_name, "Nagapura")

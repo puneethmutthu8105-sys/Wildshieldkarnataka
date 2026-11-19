@@ -108,12 +108,42 @@ with st.sidebar:
     else:
         st.info("🗄️ Demo Mode\n*(CSV data · no DB needed)*")
 
-    # ── LLM status ────────────────────────────────────────────────
+    # ── LLM status (live inference check, cached per session) ─────
     cfg_ok = validate_config()["valid"]
-    if cfg_ok:
-        st.success("🤖 LLMs: Configured ✅")
-    else:
+    if not cfg_ok:
         st.warning("🤖 LLMs: Not configured\n*(Template fallback active)*")
+    else:
+        # Cache the live inference check so it only runs once per session
+        if "llm_inference_ok" not in st.session_state:
+            st.session_state["llm_inference_ok"] = None  # None = not checked yet
+        
+        if st.session_state["llm_inference_ok"] is None:
+            # First page load — test live inference quietly
+            try:
+                orchestrator_ref = st.session_state.get("orchestrator")
+                if orchestrator_ref:
+                    r1 = orchestrator_ref.agent1.test_llm_connection()
+                    st.session_state["llm_inference_ok"] = r1["connected"]
+                    st.session_state["llm_error"] = r1.get("error", "")
+                else:
+                    st.session_state["llm_inference_ok"] = False
+                    st.session_state["llm_error"] = "Orchestrator not ready"
+            except Exception as e:
+                st.session_state["llm_inference_ok"] = False
+                st.session_state["llm_error"] = str(e)
+
+        if st.session_state["llm_inference_ok"]:
+            st.success("🤖 LLMs: Connected ✅\n*(IBM Granite — Live)*")
+        else:
+            err = st.session_state.get("llm_error", "")
+            if "no_associated_service_instance" in err:
+                st.error("🤖 LLMs: Project not linked to WML\n*(Template fallback active)*")
+            elif "invalid_instance_status" in err:
+                st.error("🤖 LLMs: WML instance inactive\n*(Template fallback active)*")
+            elif "403" in err or "401" in err:
+                st.error("🤖 LLMs: Auth failed\n*(Template fallback active)*")
+            else:
+                st.warning("🤖 LLMs: Configured — inference pending\n*(Click Run to test)*")
 
     st.divider()
 
