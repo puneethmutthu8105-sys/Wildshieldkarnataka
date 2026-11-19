@@ -1,0 +1,46 @@
+id,village_name,taluk,district,latitude,longitude,species,incident_type,severity,description,incident_date,reported_by,is_verified,is_synthetic
+1,Nagapura,Hunsur,Mysuru,12.2615,76.2891,Elephant,Crop Raid,HIGH,Herd of approximately 8 elephants entered agricultural fields and destroyed standing paddy crop.,2024-09-14,Forest Range Officer,TRUE,TRUE
+2,Nagapura,Hunsur,Mysuru,12.2601,76.2905,Elephant,Crop Raid,HIGH,Three elephants damaged sugarcane fields near the forest boundary at night.,2024-10-02,Village Headman,TRUE,TRUE
+3,Nagapura,Hunsur,Mysuru,12.2588,76.2878,Elephant,Road Crossing,MEDIUM,Elephant crossing the main road near the village entrance.,2024-10-19,Local Resident,FALSE,TRUE
+4,Nagapura,Hunsur,Mysuru,12.2630,76.2920,Elephant,Crop Raid,HIGH,Lone elephant destroyed banana plantation.,2024-11-05,Farmer,TRUE,TRUE
+5,Nagapura,Hunsur,Mysuru,12.2645,76.2895,Wild Boar,Crop Raid,MEDIUM,Wild boar group damaged groundnut crop in fields adjacent to forest.,2024-08-20,Farmer,FALSE,TRUE
+6,Nagapura,Hunsur,Mysuru,12.2598,76.2912,Wild Boar,Crop Raid,LOW,Wild boar tracks found near vegetable garden.,2024-11-10,Local Resident,FALSE,TRUE
+7,Nagapura,Hunsur,Mysuru,12.2620,76.2900,Leopard,Property Entry,HIGH,Leopard entered village premises and injured a dog.,2024-07-30,Village Headman,TRUE,TRUE
+8,Nagapura,Hunsur,Mysuru,12.2608,76.2888,Leopard,Livestock Attack,HIGH,Leopard attacked and killed a goat kept in an open enclosure.,2024-09-25,Farmer,TRUE,TRUE
+9,Heggadadevanakote,HD Kote,Mysuru,11.9887,76.3245,Elephant,Crop Raid,HIGH,Large group of elephants damaged paddy fields near forest edge.,2024-08-05,Forest Range Officer,TRUE,TRUE
+10,Heggadadevanakote,HD Kote,Mysuru,11.9902,76.3260,Elephant,Crop Raid,HIGH,Elephants broke through farm fence and destroyed maize crop.,2024-09-12,Farmer,TRUE,TRUE
+11,Heggadadevanakote,HD Kote,Mysuru,11.9875,76.3230,Tiger,Livestock Attack,HIGH,Tiger attacked and killed two calves near a farm.,2024-10-08,Livestock Owner,TRUE,TRUE
+12,Heggadadevanakote,HD Kote,Mysuru,11.9920,76.3275,Wild Boar,Crop Raid,MEDIUM,Wild boar group damaged vegetable crops in multiple fields.,2024-11-01,Farmer,FALSE,TRUE
+13,Heggadadevanakote,HD Kote,Mysuru,11.9860,76.3215,Gaur,Road Crossing,MEDIUM,Gaur herd crossing the main road near settlement area.,2024-10-25,Local Resident,FALSE,TRUE
+14,Veeranahosahalli,Kushalnagar,Kodagu,12.4582,75.9634,Elephant,Crop Raid,HIGH,Elephants raided and destroyed large area of paddy and ragi crop overnight.,2024-07-20,Farmer,TRUE,TRUE
+15,Veeranahosahalli,Kushalnagar,Kodagu,12.4601,75.9650,Elephant,Crop Raid,HIGH,Herd of elephants caused extensive crop damage.,2024-08-14,Village Headman,TRUE,TRUE
+16,Veeranahosahalli,Kushalnagar,Kodagu,12.4568,75.9618,Leopard,Property Entry,HIGH,Leopard entered school premises during evening hours.,2024-09-05,Teacher,TRUE,TRUE
+17,Veeranahosahalli,Kushalnagar,Kodagu,12.4595,75.9640,Wild Boar,Crop Raid,MEDIUM,Wild boars destroyed coffee plantation undergrowth.,2024-10-10,Farmer,FALSE,TRUE
+18,Veeranahosahalli,Kushalnagar,Kodagu,12.4578,75.9625,Elephant,Crop Raid,HIGH,Lone elephant damaged banana and areca nut plantation.,2024-11-02,Farmer,TRUE,TRUE
+19,Manchanabele,Ramanagara,Ramanagara,12.7225,77.3854,Leopard,Livestock Attack,HIGH,Leopard killed two sheep near a farmhouse.,2024-08-28,Livestock Owner,TRUE,TRUE
+20,Manchanabele,Ramanagara,Ramanagara,12.7240,77.3870,Leopard,Property Entry,MEDIUM,Leopard spotted inside the village near a residential area.,2024-09-18,Local Resident,FALSE,TRUE
+21,Manchanabele,Ramanagara,Ramanagara,12.7210,77.3840,Wild Boar,Crop Raid,LOW,Wild boar damage to vegetable garden.,2024-10-30,Farmer,FALSE,TRUE
+22,Biligirirangana Hills,Yelandur,Chamarajanagara,11.9765,77.1234,Elephant,Crop Raid,HIGH,Multiple elephants damaged standing crops in several fields.,2024-09-01,Forest Range Officer,TRUE,TRUE
+23,Biligirirangana Hills,Yelandur,Chamarajanagara,11.9780,77.1250,Tiger,Livestock Attack,HIGH,Tiger killed a cow near forest boundary.,2024-09-28,Livestock Owner,TRUE,TRUE
+24,Biligirirangana Hills,Yelandur,Chamarajanagara,11.9748,77.1215,Gaur,Road Crossing,MEDIUM,Gaur herd blocked the main road for approximately 2 hours.,2024-10-15,Local Resident,FALSE,TRUE
+25,Biligirirangana Hills,Yelandur,Chamarajanagara,11.9800,77.1265,Wild Boar,Crop Raid,MEDIUM,Wild boar group damaged groundnut fields.,2024-11-08,Farmer,FALSE,TRUE
+26,Chikkaballapur Village,Chikkaballapur,Chikkaballapur,13.4320,77.7295,Leopard,Livestock Attack,HIGH,Leopard attacked goats in the early morning.,2024-08-10,Farmer,TRUE,TRUE
+27,Chikkaballapur Village,Chikkaballapur,Chikkaballapur,13.4335,77.7310,Leopard,Property Entry,MEDIUM,Leopard spotted near a primary school.,2024-09-22,Teacher,FALSE,TRUE
+28,Chikkaballapur Village,Chikkaballapur,Chikkaballapur,13.4305,77.7280,Wild Boar,Crop Raid,LOW,Wild boar tracks near tomato fields.,2024-10-05,Farmer,FALSE,TRUE
+29,Bhadra Village,Tarikere,Chikkamagaluru,13.7115,75.8140,Elephant,Crop Raid,HIGH,Elephant herd entered coffee estate and damaged plants.,2024-07-25,Estate Owner,TRUE,TRUE
+30,Bhadra Village,Tarikere,Chikkamagaluru,13.7128,75.8158,Elephant,Crop Raid,HIGH,Lone elephant damaged banana plantation near forest boundary.,2024-09-07,Farmer,TRUE,TRUE
+31,Bhadra Village,Tarikere,Chikkamagaluru,13.7098,75.8125,Bear,Property Entry,HIGH,Sloth bear entered village premises and injured a person.,2024-10-12,Local Resident,TRUE,TRUE
+32,Bhadra Village,Tarikere,Chikkamagaluru,13.7140,75.8170,Wild Boar,Crop Raid,MEDIUM,Wild boar group damaged paddy crop.,2024-11-04,Farmer,FALSE,TRUE
+33,Kabini Village,Hunsur,Mysuru,11.9450,76.3785,Elephant,Road Crossing,LOW,Single elephant crossing road near Kabini reservoir.,2024-10-20,Tourist,FALSE,TRUE
+34,Kabini Village,Hunsur,Mysuru,11.9465,76.3800,Leopard,Sighting,LOW,Leopard spotted near water body in evening.,2024-11-01,Local Resident,FALSE,TRUE
+35,Nagarahole Village,Virajpet,Kodagu,12.1680,76.0325,Elephant,Crop Raid,HIGH,Elephant herd damaged paddy fields repeatedly this season.,2024-08-18,Farmer,TRUE,TRUE
+36,Nagarahole Village,Virajpet,Kodagu,12.1695,76.0340,Tiger,Livestock Attack,HIGH,Tiger killed two cattle near forest edge.,2024-09-30,Livestock Owner,TRUE,TRUE
+37,Nagarahole Village,Virajpet,Kodagu,12.1662,76.0310,Wild Boar,Crop Raid,MEDIUM,Wild boar group destroyed vegetable garden.,2024-10-22,Farmer,FALSE,TRUE
+38,Nagarahole Village,Virajpet,Kodagu,12.1710,76.0355,Elephant,Crop Raid,HIGH,Night raid by elephants on sugarcane fields.,2024-11-11,Farmer,TRUE,TRUE
+39,Bandipur Village,Gundlupet,Chamarajanagara,11.6710,76.6340,Elephant,Crop Raid,HIGH,Elephants broke solar fence and entered agricultural land.,2024-07-15,Farmer,TRUE,TRUE
+40,Bandipur Village,Gundlupet,Chamarajanagara,11.6725,76.6358,Tiger,Sighting,MEDIUM,Tiger spotted near village water tank at dawn.,2024-09-05,Local Resident,FALSE,TRUE
+41,Bandipur Village,Gundlupet,Chamarajanagara,11.6698,76.6322,Wild Boar,Crop Raid,MEDIUM,Wild boar damage to ragi fields.,2024-10-18,Farmer,FALSE,TRUE
+42,Bandipur Village,Gundlupet,Chamarajanagara,11.6740,76.6375,Elephant,Crop Raid,HIGH,Herd of 12 elephants caused extensive damage over 3 nights.,2024-11-06,Village Headman,TRUE,TRUE
+43,Somvarpet,Somvarpet,Kodagu,12.5985,75.9380,Leopard,Livestock Attack,HIGH,Leopard attacked cattle in a coffee estate.,2024-08-02,Estate Owner,TRUE,TRUE
+44,Somvarpet,Somvarpet,Kodagu,12.6000,75.9395,Wild Boar,Crop Raid,LOW,Wild boar tracks near paddy fields.,2024-09-14,Farmer,FALSE,TRUE
+45,Somvarpet,Somvarpet,Kodagu,12.5970,75.9365,Elephant,Sighting,LOW,Single elephant sighted near forest boundary.,2024-10-28,Local Resident,FALSE,TRUE

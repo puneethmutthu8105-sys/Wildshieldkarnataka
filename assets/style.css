@@ -1,0 +1,337 @@
+/* ============================================================
+   assets/style.css
+   Wild Shield Karnataka — Complete Dashboard Styles
+   ============================================================ */
+
+/* ---- Global reset & base ---- */
+html, body, [class*="css"] {
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif !important;
+}
+
+/* ---- Main header banner ---- */
+.wsk-header {
+    background: linear-gradient(135deg, #1a4731 0%, #2d6a4f 50%, #1a4731 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #1a4731;
+}
+.wsk-header h1 {
+    margin: 0 0 0.3rem 0;
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+.wsk-header p {
+    margin: 0;
+    opacity: 0.88;
+    font-size: 0.95rem;
+}
+.wsk-header .tagline {
+    margin-top: 0.4rem;
+    opacity: 0.72;
+    font-size: 0.82rem;
+    font-style: italic;
+}
+
+/* ---- KPI metric cards ---- */
+.kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.kpi-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1.2rem 1.4rem;
+    text-align: center;
+    transition: box-shadow 0.2s;
+}
+.kpi-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.kpi-card .kpi-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1f2328;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+}
+.kpi-card .kpi-label {
+    font-size: 0.82rem;
+    color: #57606a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.kpi-card.red   { border-top: 4px solid #dc2626; }
+.kpi-card.amber { border-top: 4px solid #d97706; }
+.kpi-card.green { border-top: 4px solid #16a34a; }
+.kpi-card.blue  { border-top: 4px solid #3b82d4; }
+
+/* ---- Risk level badges ---- */
+.badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+.badge-HIGH     { background: #dc2626; color: white; }
+.badge-MEDIUM   { background: #d97706; color: white; }
+.badge-LOW      { background: #16a34a; color: white; }
+.badge-URGENT   { background: #dc2626; color: white; }
+.badge-CAUTION  { background: #d97706; color: white; }
+.badge-AWARENESS{ background: #16a34a; color: white; }
+.badge-UNKNOWN  { background: #6b7280; color: white; }
+
+/* ---- Section cards ---- */
+.section-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+.section-card h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2328;
+}
+
+/* ---- Advisory cards ---- */
+.advisory-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+.advisory-card.urgent   { border-left: 5px solid #dc2626; }
+.advisory-card.caution  { border-left: 5px solid #d97706; }
+.advisory-card.awareness{ border-left: 5px solid #16a34a; }
+
+.advisory-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.advisory-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2328;
+}
+.advisory-body {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: #374151;
+}
+.advisory-body-kn {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #1f2328;
+}
+
+/* ---- Agent status indicators ---- */
+.agent-box {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 0.75rem;
+}
+.agent-box.agent1 { border-left: 4px solid #3b82d4; }
+.agent-box.agent2 { border-left: 4px solid #7c5cd8; }
+.agent-box.success{ border-left: 4px solid #16a34a; }
+.agent-box.error  { border-left: 4px solid #dc2626; }
+
+.agent-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+}
+.agent-label.a1 { color: #3b82d4; }
+.agent-label.a2 { color: #7c5cd8; }
+
+/* ---- Risk score gauge-like display ---- */
+.score-display {
+    text-align: center;
+    padding: 1.2rem;
+    background: #f7f8fa;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+}
+.score-number {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #1f2328;
+}
+.score-denom {
+    font-size: 1.2rem;
+    color: #57606a;
+    font-weight: 400;
+}
+.score-label {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: #57606a;
+}
+
+/* ---- Score bar ---- */
+.score-bar-track {
+    height: 10px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 0.5rem 0;
+}
+.score-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.6s ease;
+}
+.score-bar-fill.high   { background: #dc2626; }
+.score-bar-fill.medium { background: #d97706; }
+.score-bar-fill.low    { background: #16a34a; }
+
+/* ---- Precautions list ---- */
+.precaution-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.precaution-list li {
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 0.9rem;
+    color: #374151;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+.precaution-list li::before {
+    content: "✓";
+    color: #16a34a;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+.precaution-list li.urgent::before {
+    content: "⚠";
+    color: #dc2626;
+}
+
+/* ---- Synthetic data banner ---- */
+.synthetic-banner {
+    background: #fef3c7;
+    border: 1px solid #fbbf24;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-size: 0.82rem;
+    color: #92400e;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ---- Workflow steps ---- */
+.workflow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+.workflow-step:last-child { border-bottom: none; }
+.step-number {
+    background: #1a4731;
+    color: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.step-content {
+    font-size: 0.9rem;
+    color: #374151;
+    line-height: 1.5;
+}
+.step-content strong { color: #1f2328; }
+
+/* ---- Risk factor pills ---- */
+.factor-pill {
+    display: inline-block;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.82rem;
+    color: #374151;
+    margin: 0.2rem;
+}
+
+/* ---- Table styling improvements ---- */
+.incident-table-header {
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #57606a;
+    font-weight: 600;
+}
+
+/* ---- Page titles ---- */
+.page-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1f2328;
+    margin-bottom: 0.3rem;
+}
+.page-subtitle {
+    font-size: 0.95rem;
+    color: #57606a;
+    margin-bottom: 1.2rem;
+}
+
+/* ---- LLM status pill ---- */
+.llm-pill {
+    display: inline-block;
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+}
+.llm-pill.active   { background: #d1fae5; color: #065f46; }
+.llm-pill.fallback { background: #fef3c7; color: #92400e; }
+
+/* ---- Dividers ---- */
+.wsk-divider {
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    margin: 1.2rem 0;
+}
+
+/* ---- Footer ---- */
+.wsk-footer {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.75rem;
+    padding: 1.5rem 0 0.5rem;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 2rem;
+}

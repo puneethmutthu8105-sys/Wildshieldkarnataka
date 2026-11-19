@@ -1,0 +1,56 @@
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.production
+
+# Python virtual environment
+venv/
+env/
+.venv/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Logs
+*.log
+logs/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Streamlit secrets (use .streamlit/secrets.toml only locally)
+.streamlit/secrets.toml
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Sensitive data exports
+data/real/
+data/exports/
+*.csv.bak
